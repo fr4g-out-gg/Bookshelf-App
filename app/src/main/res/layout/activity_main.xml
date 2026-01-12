@@ -1,0 +1,164 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:visibility="visible">
+
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="200dp"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:padding="16dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/hint_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="12dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="16dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/hint_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailEditText" />
+
+    <Button
+        android:id="@+id/btn_email_login"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="157dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/background"
+        android:textStyle="bold"
+        android:text="Login"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEditText"
+        app:layout_constraintVertical_bias="0.008"
+        app:strokeColor="@color/stroke"
+        app:strokeWidth="1dp" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_register"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="130dp"
+        android:layout_height="52dp"
+        android:padding="0dp"
+        android:text="Register"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:cornerRadius="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.886"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEditText"
+        app:layout_constraintVertical_bias="0.881"
+        app:strokeColor="@color/white"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:id="@+id/no_acount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="10dp"
+        android:text="Don't have an account ?"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_register"
+        app:layout_constraintHorizontal_bias="0.841"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_email_login"
+        app:layout_constraintVertical_bias="0.835" />
+
+    <View
+        android:id="@+id/line_left"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#55FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_or"
+        app:layout_constraintEnd_toStartOf="@+id/tv_or"
+        app:layout_constraintStart_toStartOf="@+id/emailEditText"
+        app:layout_constraintTop_toTopOf="@+id/tv_or" />
+
+    <TextView
+        android:id="@+id/tv_or"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingHorizontal="10dp"
+        android:text="OR"
+        android:textColor="#BBBBBB"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_email_login" />
+
+    <View
+        android:id="@+id/line_right"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#55FFFFFF"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_or"
+        app:layout_constraintEnd_toEndOf="@+id/emailEditText"
+        app:layout_constraintStart_toEndOf="@+id/tv_or"
+        app:layout_constraintTop_toTopOf="@+id/tv_or" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_forgot_password"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="228dp"
+        android:text="Forgot Password?"
+        android:textAllCaps="false"
+        android:textColor="@color/link"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEditText" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_google_login"
+        android:layout_width="213dp"
+        android:layout_height="61dp"
+        android:backgroundTint="#FFFFFF"
+        android:padding="12dp"
+        android:text="Sign in with Google"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        app:cornerRadius="25dp"
+        app:icon="@drawable/ic_google_logo"
+        app:iconGravity="textStart"
+        app:iconTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_or"
+        app:layout_constraintVertical_bias="0.053"
+        app:strokeColor="@color/stroke"
+        app:strokeWidth="1dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
