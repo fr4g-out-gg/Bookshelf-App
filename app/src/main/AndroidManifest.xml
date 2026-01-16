@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bookshelf">
         <activity
+            android:name=".GameActivity"
+            android:exported="false"
+            android:parentActivityName=".Menu" />
+        <activity
             android:name=".EditProfile"
             android:exported="false"
             android:parentActivityName=".Profile" />
@@ -23,12 +27,10 @@
             android:name=".AddBook"
             android:exported="false"
             android:parentActivityName=".ChosenShelf" />
-
         <activity
             android:name=".ChosenShelf"
             android:exported="false"
             android:parentActivityName=".Menu" />
-
         <activity
             android:name=".SettingsActivity"
             android:exported="false"

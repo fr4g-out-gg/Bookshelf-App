@@ -166,8 +166,11 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.nav_profile) {
             startActivity(new Intent(Menu.this, Profile.class));
+        } else if (id == R.id.nav_game) { // PRIDANÉ: Logika pre spustenie hry
+            startActivity(new Intent(Menu.this, GameActivity.class));
         } else if (id == R.id.nav_logout) {
             mAuth.signOut();
             Intent intent = new Intent(Menu.this, MainActivity.class);
@@ -175,6 +178,7 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(intent);
             finish();
         }
+
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
