@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -56,6 +57,13 @@ public class Register extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+        TextView tvBackToLogin = findViewById(R.id.tv_back_to_login);
+        tvBackToLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(Register.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
 
 
     }

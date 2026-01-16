@@ -16,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Profile extends AppCompatActivity {
 
     private TextView tvRealName, tvUsername, tvEmail;
-    private TextView tvLibraryCount, tvReadCount, tvShelvesCount;
+    private TextView tvLibraryCount, tvReadCount, tvReadingTime;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -26,46 +26,56 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Initialize Firebase
+        // 1. Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize UI Elements
+        // 2. Initialize UI Elements
         tvRealName = findViewById(R.id.profileRealName);
         tvUsername = findViewById(R.id.profileUsername);
         tvEmail = findViewById(R.id.profileEmail);
 
         tvLibraryCount = findViewById(R.id.countLibrary);
         tvReadCount = findViewById(R.id.countRead);
-        tvShelvesCount = findViewById(R.id.countShelves);
+        tvReadingTime = findViewById(R.id.readingTime);
 
-        loadUserData();
-
-        Button EditProfileBtn = findViewById(R.id.btn_edit_profile);
-
-        EditProfileBtn.setOnClickListener(v -> {
-            // Intent to open a RegisterActivity (you'll need to create this activity)
-            Intent intent = new Intent(Profile.this, EditProfile.class);
-            startActivity(intent);
-        });
+        // 3. Setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // 2. Enable the back arrow
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
+            // Removes default "Bookshelf" title to show your centered TextView
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+        // 4. Load Data Initially
+        loadUserData();
 
+        // 5. Setup Edit Profile Button
+        Button editProfileBtn = findViewById(R.id.btn_edit_profile);
+        editProfileBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(Profile.this, EditProfile.class);
+
+            // Passing current data as extras so EditProfile isn't empty
+            intent.putExtra("CURRENT_NAME", tvRealName.getText().toString());
+
+            // Cleaning the '@' from the username before sending
+            String rawUsername = tvUsername.getText().toString().replace("@", "");
+            intent.putExtra("CURRENT_USERNAME", rawUsername);
+
+            startActivity(intent);
+        });
     }
 
+    // Handles the back button click in the Toolbar
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed(); // This takes the user back
+        onBackPressed();
         return true;
     }
 
+    // Automatically reloads data when you come back from the Edit screen
     @Override
     protected void onResume() {
         super.onResume();
@@ -76,40 +86,37 @@ public class Profile extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null) {
-            // FORCE RELOAD to get updated DisplayName/PhotoURL from Firebase Auth
+            // Reload user to ensure we have the latest DisplayName from Firebase Auth
             user.reload().addOnCompleteListener(task -> {
-
-                // Now get the fresh instance after reload
                 FirebaseUser updatedUser = mAuth.getCurrentUser();
 
                 if (updatedUser != null) {
-                    // 1. Get data from Firebase Authentication (Now Fresh!)
-                    String email = updatedUser.getEmail();
-                    String fullName = updatedUser.getDisplayName();
+                    // Update Auth-based fields
+                    tvEmail.setText(updatedUser.getEmail());
+                    tvRealName.setText(updatedUser.getDisplayName() != null ?
+                            updatedUser.getDisplayName() : "No Name Set");
 
-                    tvEmail.setText(email);
-                    tvRealName.setText(fullName != null ? fullName : "No Name Set");
-
-                    // 2. Get data from Firestore (Username & Stats)
+                    // Fetch Firestore-based fields (Username & Stats)
                     String userId = updatedUser.getUid();
                     DocumentReference userRef = db.collection("users").document(userId);
 
                     userRef.get().addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
+                            // Load Username
                             String username = documentSnapshot.getString("username");
                             tvUsername.setText("@" + (username != null ? username : "username"));
 
-                            // Fetch Statistics (using long to handle Firestore numbers)
+                            // Load Stats (Handling Longs to prevent crashes)
                             Long library = documentSnapshot.getLong("libraryCount");
                             Long read = documentSnapshot.getLong("readCount");
-                            Long shelves = documentSnapshot.getLong("shelvesCount");
+                            Long timeread = documentSnapshot.getLong("ReadingTime");
 
                             tvLibraryCount.setText(String.valueOf(library != null ? library : 0));
                             tvReadCount.setText(String.valueOf(read != null ? read : 0));
-                            tvShelvesCount.setText(String.valueOf(shelves != null ? shelves : 0));
+                            tvReadingTime.setText(String.valueOf(timeread != null ? timeread : 0));
                         }
                     }).addOnFailureListener(e -> {
-                        Toast.makeText(Profile.this, "Error loading stats", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Profile.this, "Error syncing with database", Toast.LENGTH_SHORT).show();
                     });
                 }
             });

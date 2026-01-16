@@ -1,67 +1,87 @@
 package com.example.bookshelf;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class EditProfile extends AppCompatActivity {
 
-    private ImageView profileImageView;
+    private static final String TAG = "EditProfileDebug";
     private EditText nameEdit, usernameEdit;
-    private Uri imageUri;
+    private MaterialButton saveBtn;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    // Note: You can add a ProgressBar in your XML with ID 'loadingProgress' if you want a visual loader
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        // Initialize Views
         nameEdit = findViewById(R.id.editRealName);
         usernameEdit = findViewById(R.id.editUsername);
+        saveBtn = findViewById(R.id.btn_save_profile);
 
-        setContentView(R.layout.activity_profile);
+        // Setup Toolbar
+        setupToolbar();
 
+        // 1. Unpack and Pre-fill data
+        unpackIntentData();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // 2. Enable the back arrow
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        // 2. Save Button Click Listener with Debugging
+        if (saveBtn != null) {
+            saveBtn.setOnClickListener(v -> {
+                Log.d(TAG, "Save button clicked!");
+                saveProfileChanges();
+            });
+        } else {
+            Log.e(TAG, "Save button NOT found in layout. Check R.id.btn_save_profile");
         }
-
-
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed(); // This takes the user back
-        return true;
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+            toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        }
+    }
+
+    private void unpackIntentData() {
+        String currentName = getIntent().getStringExtra("CURRENT_NAME");
+        String currentUsername = getIntent().getStringExtra("CURRENT_USERNAME");
+
+        Log.d(TAG, "Received Name: " + currentName);
+        Log.d(TAG, "Received Username: " + currentUsername);
+
+        if (currentName != null) nameEdit.setText(currentName);
+        if (currentUsername != null) usernameEdit.setText(currentUsername);
     }
 
     private void saveProfileChanges() {
@@ -69,39 +89,63 @@ public class EditProfile extends AppCompatActivity {
         String newUsername = usernameEdit.getText().toString().trim();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        if (user == null || newName.isEmpty() || newUsername.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        // Validation
+        if (newName.isEmpty() || newUsername.isEmpty()) {
+            Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        if (user == null) {
+            Log.e(TAG, "No authenticated user found.");
+            return;
+        }
 
-            updateProfileTextData(user, newName, newUsername);
+        // UI Feedback: Disable button to prevent multiple clicks
+        saveBtn.setEnabled(false);
+        saveBtn.setText("Saving...");
 
-        Intent intent = new Intent(EditProfile.this, Profile.class);
-        startActivity(intent);
+        Log.d(TAG, "Attempting to update Auth DisplayName to: " + newName);
+        updateProfileAuth(user, newName, newUsername);
     }
 
-    private void updateProfileTextData(FirebaseUser user, String name, String username) {
+    private void updateProfileAuth(FirebaseUser user, String name, String username) {
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
                 .build();
 
         user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                updateFirestoreUsername(user.getUid(), username);
+                Log.d(TAG, "Firebase Auth updated successfully.");
+                updateFirestoreData(user.getUid(), username);
+            } else {
+                Log.e(TAG, "Auth Update Failed", task.getException());
+                resetButton();
+                Toast.makeText(this, "Failed to update Auth name", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void updateFirestoreUsername(String uid, String username) {
+    private void updateFirestoreData(String uid, String username) {
         Map<String, Object> updates = new HashMap<>();
         updates.put("username", username);
 
+        Log.d(TAG, "Attempting to update Firestore for UID: " + uid);
+
         db.collection("users").document(uid).update(updates)
                 .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Firestore updated successfully.");
                     Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
-                    // This closes EditProfile and goes back to the Profile screen
-                    finish();
+                    finish(); // Go back to Profile screen
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Firestore Update Failed", e);
+                    resetButton();
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void resetButton() {
+        saveBtn.setEnabled(true);
+        saveBtn.setText("Save Changes");
     }
 }
