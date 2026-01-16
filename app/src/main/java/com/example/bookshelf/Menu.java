@@ -3,6 +3,7 @@ package com.example.bookshelf;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
@@ -19,7 +20,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Menu extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,16 +35,24 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
     private boolean isRunning = false;
     private long pauseOffset;
 
+    // Firebase instances
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        // Initialize Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
         // 1. Setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false); // Hide default title to show centered one
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
         // 2. Setup Timer UI
@@ -50,13 +65,10 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Initialize Drawer Toggle (Hamburger)
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-
-        // Color the Hamburger icon White
         toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.white));
 
         // 4. Load User Data for Header
@@ -69,11 +81,10 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
         TextView tvHandle = headerView.findViewById(R.id.nav_user_handle);
         TextView tvEmail = headerView.findViewById(R.id.nav_user_email);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null) {
-            tvRealName.setText(user.getDisplayName());
+            tvRealName.setText(user.getDisplayName() != null ? user.getDisplayName() : "User");
             tvEmail.setText(user.getEmail());
 
             db.collection("users").document(user.getUid()).get()
@@ -91,6 +102,7 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
             chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
             chronometer.start();
             isRunning = true;
+            Toast.makeText(this, "Reading started...", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -101,9 +113,54 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
             pauseOffset = 0;
             isRunning = false;
 
+            // Calculate duration
             int totalSeconds = (int) (elapsedMillis / 1000);
-            Toast.makeText(this, "Session: " + (totalSeconds / 60) + " min " + (totalSeconds % 60) + " sec", Toast.LENGTH_SHORT).show();
+            int totalMinutes = totalSeconds / 60;
+
+
+            saveReadingSession(totalMinutes);
+
+
+            chronometer.setBase(SystemClock.elapsedRealtime()); // Reset display
         }
+    }
+
+    private void saveReadingSession(int sessionMinutes) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) return;
+
+        String userId = user.getUid();
+        DocumentReference userRef = db.collection("users").document(userId);
+        CollectionReference sessionsRef = userRef.collection("sessions");
+
+        Map<String, Object> sessionData = new HashMap<>();
+        sessionData.put("date", com.google.firebase.Timestamp.now());
+        sessionData.put("duration", sessionMinutes);
+
+        db.runTransaction(transaction -> {
+            DocumentSnapshot userSnapshot = transaction.get(userRef);
+            long currentTotal = 0;
+
+            if (userSnapshot.exists() && userSnapshot.contains("ReadingTime")) {
+                Object timeObj = userSnapshot.get("ReadingTime");
+                if (timeObj instanceof Long) {
+                    currentTotal = (Long) timeObj;
+                }
+            }
+
+            // Save individual session log
+            transaction.set(sessionsRef.document(), sessionData);
+
+            // Update the main total
+            transaction.update(userRef, "ReadingTime", currentTotal + sessionMinutes);
+
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            Toast.makeText(this, "Saved " + sessionMinutes + " mins to profile!", Toast.LENGTH_LONG).show();
+        }).addOnFailureListener(e -> {
+            Log.e("ReadingSession", "Failed to save session", e);
+            Toast.makeText(this, "Error saving session", Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override
@@ -112,8 +169,10 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
         if (id == R.id.nav_profile) {
             startActivity(new Intent(Menu.this, Profile.class));
         } else if (id == R.id.nav_logout) {
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(Menu.this, MainActivity.class));
+            mAuth.signOut();
+            Intent intent = new Intent(Menu.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             finish();
         }
         drawerLayout.closeDrawer(GravityCompat.START);
