@@ -169,7 +169,9 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (id == R.id.nav_profile) {
             startActivity(new Intent(Menu.this, Profile.class));
-        } else if (id == R.id.nav_game) { // PRIDANÉ: Logika pre spustenie hry
+        } else if (id == R.id.nav_bookshelf) {
+        startActivity(new Intent(Menu.this, Bookshelf.class));
+        }else if (id == R.id.nav_game) {
             startActivity(new Intent(Menu.this, GameActivity.class));
         } else if (id == R.id.nav_logout) {
             mAuth.signOut();

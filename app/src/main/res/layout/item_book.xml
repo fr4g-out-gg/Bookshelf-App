@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+
+    android:background="@drawable/bookshelf"
+    >
+
+    <Button
+        android:id="@+id/btnBookItem"
+        android:layout_width="400dp"
+        android:layout_height="140dp"
+        android:background="@drawable/transparent"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="Názov knihy"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textFontWeight="700"
+        android:textSize="50sp"
+        android:textStyle="bold" />
+</LinearLayout>
+

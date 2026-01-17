@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bookshelf">
         <activity
+            android:name=".Bookshelf"
+            android:exported="false"
+            android:parentActivityName=".Menu"
+            />
+        <activity
             android:name=".GameActivity"
             android:exported="false"
             android:parentActivityName=".Menu" />
