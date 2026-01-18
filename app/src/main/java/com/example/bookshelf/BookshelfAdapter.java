@@ -1,5 +1,6 @@
 package com.example.bookshelf;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,15 @@ public class BookshelfAdapter extends RecyclerView.Adapter<BookshelfAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String bookTitle = bookList.get(position);
-        holder.bookButton.setText(bookTitle);
+        String shelfName = bookList.get(position);
+        holder.bookButton.setText(shelfName);
         holder.bookButton.setOnClickListener(v -> {
-            // Tu pridaj akciu po kliknutí na knihu
+            Intent intent = new Intent(v.getContext(), ChosenShelf.class);
+
+            // Odovzdanie názvu poličky
+            intent.putExtra("CHOSEN_SHELF_NAME", shelfName);
+
+            v.getContext().startActivity(intent);
         });
 
     }

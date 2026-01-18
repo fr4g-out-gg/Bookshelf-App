@@ -85,17 +85,22 @@ public class Bookshelf extends AppCompatActivity {
 
         Map<String, Object> shelfData = new HashMap<>();
         shelfData.put("name", name);
-        shelfData.put("timestamp", com.google.firebase.Timestamp.now()); // Pre zoradenie
+        shelfData.put("timestamp", com.google.firebase.Timestamp.now());
 
-        db.collection("users").document(uid).collection("custom_shelves")
-                .add(shelfData)
-                .addOnSuccessListener(documentReference -> {
+        // ZMENA: Namiesto .add() použijeme .document(name).set()
+        db.collection("users").document(uid)
+                .collection("custom_shelves")
+                .document(name) // Týmto nastavíme ID dokumentu na názov poličky
+                .set(shelfData)
+                .addOnSuccessListener(aVoid -> {
                     // Po úspešnom uložení pridáme do zoznamu a refreshneme UI
                     shelfList.add(name);
                     adapter.notifyItemInserted(shelfList.size() - 1);
-                    Toast.makeText(this, "Polička pridaná", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Polička " + name + " pridaná", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba ukladania", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Chyba ukladania: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void loadShelvesFromFirestore() {
