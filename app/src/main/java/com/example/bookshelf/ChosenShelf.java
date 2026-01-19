@@ -1,5 +1,6 @@
 package com.example.bookshelf;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -62,7 +63,11 @@ public class ChosenShelf extends AppCompatActivity {
 
         // 4. Pridávanie kníh (FAB)
         ImageButton fab = findViewById(R.id.fab_add_book);
-        fab.setOnClickListener(v -> showAddBookDialog());
+        fab.setOnClickListener(v -> {
+            Intent intent = new Intent(ChosenShelf.this, AddBook.class);
+            intent.putExtra("CHOSEN_SHELF_NAME", shelfName);
+            startActivity(intent);
+        });
     }
 
     private void showAddBookDialog() {

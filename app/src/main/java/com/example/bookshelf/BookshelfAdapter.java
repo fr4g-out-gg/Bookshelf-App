@@ -20,7 +20,7 @@ public class BookshelfAdapter extends RecyclerView.Adapter<BookshelfAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_book, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_shelf, parent, false);
         return new ViewHolder(view);
     }
 
@@ -50,7 +50,7 @@ public class BookshelfAdapter extends RecyclerView.Adapter<BookshelfAdapter.View
         Button bookButton;
         public ViewHolder(View itemView) {
             super(itemView);
-            bookButton = itemView.findViewById(R.id.btnBookItem);
+            bookButton = itemView.findViewById(R.id.btnShelfItem);
         }
     }
 }

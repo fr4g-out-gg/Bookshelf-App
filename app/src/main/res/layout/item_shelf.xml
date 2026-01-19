@@ -8,7 +8,7 @@
     >
 
     <Button
-        android:id="@+id/btnBookItem"
+        android:id="@+id/btnShelfItem"
         android:layout_width="400dp"
         android:layout_height="140dp"
         android:background="@drawable/transparent"

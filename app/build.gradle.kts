@@ -63,6 +63,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.firebase:firebase-firestore:25.1.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
 }
 
