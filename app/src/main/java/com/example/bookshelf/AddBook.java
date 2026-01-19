@@ -100,17 +100,33 @@ public class AddBook extends AppCompatActivity {
     }
 
     private void saveBookToFirestore(String title, String downloadUrl) {
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            Toast.makeText(this, "Používateľ nie je prihlásený", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 1. Get current values from UI
+        String author = editAuthor.getText().toString().trim();
+        String description = editDescription.getText().toString().trim();
+        String genre = editGenre.getText().toString().trim();
+        boolean isRead = checkRead.isChecked();
+
+        // 2. Create the Book object using the NEW constructor (including Timestamp)
+        // Import com.google.firebase.Timestamp at the top
+        com.google.firebase.Timestamp currentTime = com.google.firebase.Timestamp.now();
 
         Book book = new Book(
                 title,
-                editAuthor.getText().toString().trim(),
-                editDescription.getText().toString().trim(),
-                editGenre.getText().toString().trim(),
+                author,
+                description,
+                genre,
                 downloadUrl,
-                checkRead.isChecked()
+                isRead,
+                currentTime // Added this to fix the null timestamp in your screenshot
         );
 
+        // 3. Save to Firestore
         FirebaseFirestore.getInstance()
                 .collection("users").document(uid)
                 .collection("custom_shelves").document(shelfName)
@@ -120,6 +136,9 @@ public class AddBook extends AppCompatActivity {
                     Toast.makeText(this, "Kniha úspešne uložená!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("FirestoreError", "Error adding book", e);
+                    Toast.makeText(this, "Chyba: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

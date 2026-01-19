@@ -77,26 +77,26 @@ public class ChosenShelf extends AppCompatActivity {
         String uid = mAuth.getCurrentUser().getUid();
 
         // Cesta v databáze: users -> UID -> custom_shelves -> shelfName -> books
-        db.collection("users").document(uid)
-                .collection("custom_shelves").document(shelfName)
-                .collection("books")
-                .orderBy("title", Query.Direction.ASCENDING) // Zoradenie podľa názvu
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    bookList.clear();
-                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        // Firebase automaticky premení dokument na objekt triedy Book
-                        Book book = doc.toObject(Book.class);
-                        if (book != null) {
-                            bookList.add(book);
-                        }
-                    }
-                    adapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firebase", "Chyba pri načítaní kníh", e);
-                    Toast.makeText(this, "Nepodarilo sa načítať knihy", Toast.LENGTH_SHORT).show();
-                });
+//        db.collection("users").document(uid)
+//                .collection("custom_shelves").document(shelfName)
+//                .collection("books")
+//                .orderBy("title", Query.Direction.ASCENDING) // Zoradenie podľa názvu
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    bookList.clear();
+//                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+//                        // Firebase automaticky premení dokument na objekt triedy Book
+//                        Book book = doc.toObject(Book.class);
+//                        if (book != null) {
+//                            bookList.add(book);
+//                        }
+//                    }
+//                    adapter.notifyDataSetChanged();
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e("Firebase", "Chyba pri načítaní kníh", e);
+//                    Toast.makeText(this, "Nepodarilo sa načítať knihy", Toast.LENGTH_SHORT).show();
+//                });
     }
 
     @Override
