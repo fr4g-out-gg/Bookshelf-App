@@ -27,7 +27,7 @@ public class AddBook extends AppCompatActivity {
     private EditText editTitle, editAuthor, editGenre, editDescription;
     private CheckBox checkRead;
     private ImageView imgCover;
-    private Uri imageUri; // Cesta k vybranému obrázku v telefóne
+    private Uri imageUri;
     private String shelfName;
 
     @Override

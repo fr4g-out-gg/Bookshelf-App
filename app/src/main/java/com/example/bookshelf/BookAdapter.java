@@ -5,15 +5,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide; // Nezabudni pridať Glide do build.gradle
+import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
-    // Zmena: List teraz obsahuje objekty triedy Book, nie Stringy
     private List<Book> bookList;
 
     public BookAdapter(List<Book> bookList) {
@@ -23,7 +23,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     @NonNull
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Použijeme tvoj XML layout pre položku knihy
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_shelf, parent, false);
         return new BookViewHolder(view);
     }
@@ -32,38 +31,39 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book currentBook = bookList.get(position);
 
-        // Nastavenie textu (ak máš v item_book.xml TextView pre názov)
-        if (holder.txtTitle != null) {
-            holder.txtTitle.setText(currentBook.getTitle());
+        // 1. Safety Check: If Firestore failed to map the book, skip this item
+        if (currentBook == null) return;
+
+        // 2. Set Title (Handles both TextView and Button types)
+        if (holder.txtTitle instanceof TextView) {
+            ((TextView) holder.txtTitle).setText(currentBook.getTitle());
+        } else if (holder.txtTitle instanceof Button) {
+            ((Button) holder.txtTitle).setText(currentBook.getTitle());
         }
 
-        // Načítanie obrázka pomocou Glide
-        if (currentBook.getImageUrl() != null && !currentBook.getImageUrl().isEmpty()) {
-            Glide.with(holder.itemView.getContext())
-                    .load(currentBook.getImageUrl())
-                    .placeholder(R.drawable.default_cover) // Vyrob si jednoduchý sivý obrázok v drawables
-                    .centerCrop()
-                    .into(holder.imgCover);
-        } else {
-            // Ak kniha nemá obrázok, nastavíme predvolený
-            holder.imgCover.setImageResource(R.drawable.default_cover);
-        }
+        // 3. Load Image with Glide
+        String url = currentBook.getImageUrl();
+        Glide.with(holder.itemView.getContext())
+                .load(url != null && !url.isEmpty() ? url : null)
+                .placeholder(R.drawable.default_cover)
+                .error(R.drawable.default_cover)
+                .centerCrop()
+                .into(holder.imgCover);
     }
 
     @Override
     public int getItemCount() {
-        return bookList.size();
+        return bookList != null ? bookList.size() : 0;
     }
 
     public static class BookViewHolder extends RecyclerView.ViewHolder {
         ImageView imgCover;
-        TextView txtTitle;
+        View txtTitle; // Changed to View to prevent ClassCastException
 
         public BookViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Tu musia ID súhlasiť s tvojím item_book.xml
             imgCover = itemView.findViewById(R.id.imgBookItemCover);
-            txtTitle = itemView.findViewById(R.id.btnBookItem); // Ak používaš Button ako pozadie s textom
+            txtTitle = itemView.findViewById(R.id.btnBookItem);
         }
     }
 }
