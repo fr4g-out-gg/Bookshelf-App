@@ -58,7 +58,7 @@
             <EditText android:id="@+id/edit_book_title"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:hint="Názov knihy" android:inputType="textCapSentences"
-                android:textColor="@color/white" android:textColorHint="@color/hint_grey"/>
+                android:textColor="@color/white" android:textColorHint="@color/hint_grey" />
 
             <EditText android:id="@+id/edit_book_author"
                 android:layout_width="match_parent" android:layout_height="wrap_content"

@@ -72,31 +72,51 @@ public class ChosenShelf extends AppCompatActivity {
     }
 
     private void loadBooksFromFirestore() {
-        if (mAuth.getCurrentUser() == null) return;
+        if (mAuth.getCurrentUser() == null) {
+            Log.e("Firebase", "Používateľ nie je prihlásený");
+            return;
+        }
+
+        // Overenie, či shelfName nie je null, inak cesta v DB zlyhá
+        if (shelfName == null || shelfName.isEmpty()) {
+            Log.e("Firebase", "Názov police (shelfName) je prázdny!");
+            return;
+        }
 
         String uid = mAuth.getCurrentUser().getUid();
 
-        // Cesta v databáze: users -> UID -> custom_shelves -> shelfName -> books
-//        db.collection("users").document(uid)
-//                .collection("custom_shelves").document(shelfName)
-//                .collection("books")
-//                .orderBy("title", Query.Direction.ASCENDING) // Zoradenie podľa názvu
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    bookList.clear();
-//                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
-//                        // Firebase automaticky premení dokument na objekt triedy Book
-//                        Book book = doc.toObject(Book.class);
-//                        if (book != null) {
-//                            bookList.add(book);
-//                        }
-//                    }
-//                    adapter.notifyDataSetChanged();
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.e("Firebase", "Chyba pri načítaní kníh", e);
-//                    Toast.makeText(this, "Nepodarilo sa načítať knihy", Toast.LENGTH_SHORT).show();
-//                });
+        // 1. Odkaz na správnu kolekciu
+        db.collection("users").document(uid)
+                .collection("custom_shelves").document(shelfName)
+                .collection("books")
+                // 2. Zoradenie (POZOR: Ak toto spôsobí chybu, pozri bod nižšie o indexoch)
+                .orderBy("title", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+                        bookList.clear();
+                        for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                            try {
+                                // Firebase premení dokument na objekt
+                                Book book = doc.toObject(Book.class);
+                                if (book != null) {
+                                    bookList.add(book);
+                                }
+                            } catch (Exception e) {
+                                Log.e("Firebase", "Chyba pri mapovaní dokumentu ID: " + doc.getId(), e);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("Firebase", "Nenašli sa žiadne knihy.");
+                        bookList.clear();
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firebase", "Chyba pri načítaní kníh z cesty: " + shelfName, e);
+                    Toast.makeText(this, "Chyba: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     @Override

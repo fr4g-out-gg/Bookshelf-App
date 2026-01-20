@@ -11,10 +11,10 @@ import java.util.List;
 
 public class BookshelfAdapter extends RecyclerView.Adapter<BookshelfAdapter.ViewHolder> {
 
-    private List<String> bookList;
+    private List<String> shelfList;
 
-    public BookshelfAdapter(List<String> bookList) {
-        this.bookList = bookList;
+    public BookshelfAdapter(List<String> shelfList) {
+        this.shelfList = shelfList;
     }
 
     @NonNull
@@ -26,31 +26,29 @@ public class BookshelfAdapter extends RecyclerView.Adapter<BookshelfAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String shelfName = bookList.get(position);
-        holder.bookButton.setText(shelfName);
-        holder.bookButton.setOnClickListener(v -> {
+        String shelfName = shelfList.get(position);
+
+        holder.shelfButton.setText(shelfName);
+
+        // Po kliknutí na poličku sa otvorí jej detail
+        holder.shelfButton.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), ChosenShelf.class);
-
-            // Odovzdanie názvu poličky
             intent.putExtra("CHOSEN_SHELF_NAME", shelfName);
-
             v.getContext().startActivity(intent);
         });
-
     }
 
     @Override
     public int getItemCount() {
-        return bookList.size();
+        return shelfList != null ? shelfList.size() : 0;
     }
 
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        Button bookButton;
+        Button shelfButton;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            bookButton = itemView.findViewById(R.id.btnShelfItem);
+            shelfButton = itemView.findViewById(R.id.btnShelfItem);
         }
     }
 }

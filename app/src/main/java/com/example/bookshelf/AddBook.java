@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -101,44 +102,32 @@ public class AddBook extends AppCompatActivity {
 
     private void saveBookToFirestore(String title, String downloadUrl) {
         String uid = FirebaseAuth.getInstance().getUid();
-        if (uid == null) {
-            Toast.makeText(this, "Používateľ nie je prihlásený", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        // 1. Get current values from UI
-        String author = editAuthor.getText().toString().trim();
-        String description = editDescription.getText().toString().trim();
-        String genre = editGenre.getText().toString().trim();
-        boolean isRead = checkRead.isChecked();
-
-        // 2. Create the Book object using the NEW constructor (including Timestamp)
-        // Import com.google.firebase.Timestamp at the top
-        com.google.firebase.Timestamp currentTime = com.google.firebase.Timestamp.now();
-
+        // Vytvor objekt so VŠETKÝMI parametrami (aj timestamp)
         Book book = new Book(
                 title,
-                author,
-                description,
-                genre,
+                editAuthor.getText().toString().trim(),
+                editDescription.getText().toString().trim(),
+                editGenre.getText().toString().trim(),
                 downloadUrl,
-                isRead,
-                currentTime // Added this to fix the null timestamp in your screenshot
+                checkRead.isChecked(),
+                com.google.firebase.Timestamp.now() // Musí tu byť, ak ho má Book.java v konštruktore
         );
 
-        // 3. Save to Firestore
         FirebaseFirestore.getInstance()
                 .collection("users").document(uid)
                 .collection("custom_shelves").document(shelfName)
                 .collection("books")
                 .add(book)
                 .addOnSuccessListener(doc -> {
-                    Toast.makeText(this, "Kniha úspešne uložená!", Toast.LENGTH_SHORT).show();
+                    Log.d("Firestore", "Uložené s ID: " + doc.getId());
+                    Toast.makeText(this, "Kniha uložená!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    android.util.Log.e("FirestoreError", "Error adding book", e);
-                    Toast.makeText(this, "Chyba: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    // TOTO TI POVIE PRESNÚ CHYBU V LOGCATE
+                    Log.e("FirestoreError", "Chyba pri zápise: ", e);
+                    Toast.makeText(this, "Chyba Firestore: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 }
