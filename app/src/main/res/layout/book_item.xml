@@ -1,52 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/white">
+    android:layout_height="160dp"
+    android:orientation="vertical"
+    android:layout_marginBottom="25dp"
+    android:background="@drawable/no_cover_available"
+    >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/imgBookItemCover"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/default_cover"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/btnBookItem"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="Názov knihy"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/imgBookItemCover"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <View
-            android:id="@+id/readIndicator"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_margin="8dp"
-            android:background="@android:color/holo_green_light"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+    <Button
+        android:id="@+id/btnBookItem"
+        android:layout_width="400dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/transparent"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="Názov knihy"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textFontWeight="700"
+        android:textSize="50sp"
+        android:textStyle="bold" />
+</LinearLayout>

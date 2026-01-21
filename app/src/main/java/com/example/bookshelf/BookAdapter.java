@@ -20,8 +20,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     @NonNull
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Použijeme ten istý layout, ale Glide už volať nebudeme
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_shelf, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_item, parent, false);
         return new BookViewHolder(view);
     }
 
@@ -38,7 +37,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             ((TextView) holder.txtTitle).setText(currentBook.getTitle());
         }
 
-        // Glide kód bol odstránený - žiadne pády kvôli obrázkom!
     }
 
     @Override
@@ -52,7 +50,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         public BookViewHolder(@NonNull View itemView) {
             super(itemView);
             // Priraďujeme len ID pre text/tlačidlo
-            txtTitle = itemView.findViewById(R.id.btnShelfItem);
+            txtTitle = itemView.findViewById(R.id.btnBookItem);
         }
     }
 }
