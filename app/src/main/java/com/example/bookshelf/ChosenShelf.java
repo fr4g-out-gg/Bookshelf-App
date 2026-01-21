@@ -150,4 +150,8 @@ public class ChosenShelf extends AppCompatActivity {
         finish();
         return true;
     }
+
+    public String getShelfName() {
+        return shelfName;
+    }
 }

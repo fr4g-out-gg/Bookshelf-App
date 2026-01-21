@@ -1,8 +1,11 @@
 package com.example.bookshelf;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -33,7 +36,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
         if (currentBook == null) return;
 
-
+        Context context = holder.itemView.getContext();
         String url = currentBook.getImageUrl();
 
         if (holder.txtTitle != null) {
@@ -55,6 +58,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                     .into(holder.imgCover);
         }
 
+
+
         if (holder.imgReadStatus != null) {
             if (currentBook.isRead()) {
                 holder.imgReadStatus.setVisibility(View.VISIBLE);
@@ -62,6 +67,21 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                 holder.imgReadStatus.setVisibility(View.GONE);
             }
         }
+
+
+        // 4. KLIKNUTIE NA BUTTON (btnBookItem)
+        holder.btnClickArea.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ChosenBook.class);
+
+            if (context instanceof ChosenShelf) {
+                String shelfName = ((ChosenShelf) context).getShelfName();
+                intent.putExtra("SHELF_NAME", shelfName);
+            }
+
+            // Posielame názov knihy ako ID pre vyhľadanie vo Firestore
+            intent.putExtra("BOOK_ID", currentBook.getTitle());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -74,11 +94,14 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         TextView txtTitle;
         ImageView imgReadStatus;
 
+        Button btnClickArea;
+
         public BookViewHolder(@NonNull View itemView) {
             super(itemView);
             imgCover = itemView.findViewById(R.id.imgBookItemCover);
             txtTitle = itemView.findViewById(R.id.nameBookItem);
             imgReadStatus = itemView.findViewById(R.id.imgReadStatus);
+            btnClickArea = itemView.findViewById(R.id.btnBookItem);
 
         }
     }
