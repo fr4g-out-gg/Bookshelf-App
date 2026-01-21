@@ -128,4 +128,10 @@ public class Bookshelf extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadShelvesFromFirestore();
+    }
 }

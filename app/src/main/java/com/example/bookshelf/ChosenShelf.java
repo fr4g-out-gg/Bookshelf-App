@@ -9,7 +9,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,8 +36,9 @@ public class ChosenShelf extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        // Získanie názvu poličky
         shelfName = getIntent().getStringExtra("CHOSEN_SHELF_NAME");
+        ImageButton btnDeleteShelf = findViewById(R.id.btnDeleteShelf);
+        btnDeleteShelf.setOnClickListener(v -> showDeleteShelfDialog());
 
         // 1. Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -50,7 +50,7 @@ public class ChosenShelf extends AppCompatActivity {
 
         // 2. RecyclerView (3 stĺpce pre mriežku kníh)
         recyclerView = findViewById(R.id.recyclerViewBooks);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
         bookList = new ArrayList<>();
         adapter = new BookAdapter(bookList); // Používame nový adaptér
@@ -63,6 +63,31 @@ public class ChosenShelf extends AppCompatActivity {
             intent.putExtra("CHOSEN_SHELF_NAME", shelfName);
             startActivity(intent);
         });
+    }
+
+    private void showDeleteShelfDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Zmazať poličku")
+                .setMessage("Naozaj chcete zmazať celú poličku '" + shelfName + "'? Táto akcia je nevratná.")
+                .setPositiveButton("Zmazať", (dialog, which) -> deleteShelf())
+                .setNegativeButton("Zrušiť", null)
+                .show();
+    }
+
+    private void deleteShelf() {
+        String uid = mAuth.getCurrentUser().getUid();
+
+        // Cesta k dokumentu poličky
+        db.collection("users").document(uid)
+                .collection("custom_shelves").document(shelfName)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(ChosenShelf.this, "Polička zmazaná", Toast.LENGTH_SHORT).show();
+                    finish(); // Zavrie aktivitu a vráti ťa na Bookshelf.java
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(ChosenShelf.this, "Chyba pri mazaní: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     // Refresh dát pri každom návrate do aktivity

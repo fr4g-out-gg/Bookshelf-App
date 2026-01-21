@@ -1,23 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:orientation="vertical"
-    android:layout_marginBottom="25dp"
-    android:background="@drawable/no_cover_available"
-    >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="115dp"
+    android:layout_height="180dp"
+    android:layout_margin="2dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginTop="8dp"
+    android:elevation="4dp">
+
+    <ImageView
+        android:id="@+id/imgBookItemCover"
+        android:layout_width="115dp"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/no_cover_available"
+        android:layout_gravity="start"/>
 
     <Button
         android:id="@+id/btnBookItem"
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/transparent"
         android:fontFamily="cursive"
         android:gravity="center"
-        android:text="Názov knihy"
+        android:padding="5dp"
+        android:text=""
         android:textAllCaps="false"
-        android:textColor="@color/black"
-        android:textFontWeight="700"
-        android:textSize="50sp"
+        android:textColor="@color/white"
+        android:textColorHighlight="@color/white"
+        android:textSize="24sp"
         android:textStyle="bold" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/nameBookItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Názov"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textColorHighlight="@color/white"
+        android:textSize="40sp"
+        android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/imgReadStatus"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_read_check"
+        android:visibility="gone" />
+
+</FrameLayout>
