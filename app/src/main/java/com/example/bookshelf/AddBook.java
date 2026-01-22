@@ -36,11 +36,15 @@ public class AddBook extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_book);
 
+        // Získanie mena poličky, do ktorej pridávame
         shelfName = getIntent().getStringExtra("CHOSEN_SHELF_NAME");
 
         // Inicializácia UI
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Pridať knihu");
+        }
         toolbar.setNavigationOnClickListener(v -> finish());
 
         imgCover = findViewById(R.id.img_book_cover);
@@ -53,7 +57,7 @@ public class AddBook extends AppCompatActivity {
         Button btnSelectImg = findViewById(R.id.btn_select_image);
         Button btnSave = findViewById(R.id.btn_save_book);
 
-        // Launcher pre výber obrázka z galérie
+        // Launcher pre výber obrázka
         ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -79,31 +83,33 @@ public class AddBook extends AppCompatActivity {
             return;
         }
 
-        // Ak používateľ vybral obrázok, najprv nahráme ten
         if (imageUri != null) {
             uploadToStorage(title);
         } else {
-            // Ak nevybral obrázok, uložíme knihu s prázdnou URL
-            saveBookToFirestore(title, "");
+            saveBookToFirestore(title, ""); // Bez obrázka
         }
     }
 
     private void uploadToStorage(String title) {
-        String fileName = UUID.randomUUID().toString(); // Unikátne meno súboru
+        String fileName = UUID.randomUUID().toString();
         StorageReference storageRef = FirebaseStorage.getInstance().getReference("book_covers/" + fileName);
 
         storageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    // Máme URL obrázka, teraz uložíme knihu do Firestore
                     saveBookToFirestore(title, uri.toString());
                 }))
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba nahrávania obrázka", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Log.e("StorageError", "Chyba: ", e);
+                    Toast.makeText(this, "Chyba nahrávania obrázka", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void saveBookToFirestore(String title, String downloadUrl) {
         String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null || shelfName == null) return;
 
-        // Vytvor objekt so VŠETKÝMI parametrami (aj timestamp)
+        // OPRAVA: Voláme nový konštruktor modelu Book so všetkými parametrami.
+        // ID posielame ako null, pretože ho vygeneruje Firestore.
         Book book = new Book(
                 title,
                 editAuthor.getText().toString().trim(),
@@ -111,21 +117,20 @@ public class AddBook extends AppCompatActivity {
                 editGenre.getText().toString().trim(),
                 downloadUrl,
                 checkRead.isChecked(),
-                com.google.firebase.Timestamp.now() // Musí tu byť, ak ho má Book.java v konštruktore
+                com.google.firebase.Timestamp.now(),
+                null // Toto je parameter 'id'
         );
 
         FirebaseFirestore.getInstance()
                 .collection("users").document(uid)
                 .collection("custom_shelves").document(shelfName)
                 .collection("books")
-                .add(book)
+                .add(book) // Používame .add() pre náhodné ID
                 .addOnSuccessListener(doc -> {
-                    Log.d("Firestore", "Uložené s ID: " + doc.getId());
                     Toast.makeText(this, "Kniha uložená!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    // TOTO TI POVIE PRESNÚ CHYBU V LOGCATE
                     Log.e("FirestoreError", "Chyba pri zápise: ", e);
                     Toast.makeText(this, "Chyba Firestore: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });

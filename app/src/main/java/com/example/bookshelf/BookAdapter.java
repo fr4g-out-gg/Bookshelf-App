@@ -79,7 +79,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             }
 
             // Posielame názov knihy ako ID pre vyhľadanie vo Firestore
-            intent.putExtra("BOOK_ID", currentBook.getTitle());
+            intent.putExtra("BOOK_ID", currentBook.getId()); // Posielame unikátne ID dokumentu
             context.startActivity(intent);
         });
     }

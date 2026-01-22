@@ -83,7 +83,7 @@ public class ChosenShelf extends AppCompatActivity {
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(ChosenShelf.this, "Polička zmazaná", Toast.LENGTH_SHORT).show();
-                    finish(); // Zavrie aktivitu a vráti ťa na Bookshelf.java
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(ChosenShelf.this, "Chyba pri mazaní: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -126,6 +126,7 @@ public class ChosenShelf extends AppCompatActivity {
                                 // Firebase premení dokument na objekt
                                 Book book = doc.toObject(Book.class);
                                 if (book != null) {
+                                    book.setId(doc.getId());
                                     bookList.add(book);
                                 }
                             } catch (Exception e) {

@@ -1,11 +1,13 @@
 package com.example.bookshelf;
 
-
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Book {
+    // Pridaná chýbajúca deklarácia premennej
+    private String id;
     private String title;
     private String author;
     private String description;
@@ -14,13 +16,13 @@ public class Book {
     private boolean read;
     private Timestamp timestamp;
 
-    // 1. TENTO KONŠTRUKTOR JE KRITICKÝ - Firebase ho potrebuje!
+    // 1. Povinný prázdny konštruktor pre Firebase
     public Book() {
-        // Prázdne telo je v poriadku
     }
 
-    // 2. Hlavný konštruktor pre tvoje použitie v AddBook
-    public Book(String title, String author, String description, String genre, String imageUrl, boolean read, Timestamp timestamp) {
+    // 2. Hlavný konštruktor
+    public Book(String title, String author, String description, String genre, String imageUrl, boolean read, Timestamp timestamp, String id) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.description = description;
@@ -30,7 +32,11 @@ public class Book {
         this.timestamp = timestamp;
     }
 
-    // 3. Gettery (potrebné pre nahrávanie a zobrazovanie)
+    // 3. Gettery
+    // @Exclude zabezpečí, že ID sa nebude duplicitne ukladať do vnútra dokumentu
+    @Exclude
+    public String getId() { return id; }
+
     public String getTitle() { return title; }
     public String getAuthor() { return author; }
     public String getDescription() { return description; }
@@ -39,7 +45,8 @@ public class Book {
     public boolean isRead() { return read; }
     public Timestamp getTimestamp() { return timestamp; }
 
-    // 4. Settery (Firebase ich používa pri deserializácii / metóde toObject)
+    // 4. Settery
+    public void setId(String id) { this.id = id; }
     public void setTitle(String title) { this.title = title; }
     public void setAuthor(String author) { this.author = author; }
     public void setDescription(String description) { this.description = description; }
