@@ -14,7 +14,7 @@ public class GameActivity extends AppCompatActivity {
 
         // Voliteľné: Nastavenie titulku v hornej lište
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Chyť loptičku");
+            getSupportActionBar().setTitle("Catch the Ball");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

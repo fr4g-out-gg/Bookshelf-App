@@ -45,7 +45,7 @@ public class AddBook extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Pridať knihu");
+            getSupportActionBar().setTitle("Add book");
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
@@ -81,7 +81,7 @@ public class AddBook extends AppCompatActivity {
     private void uploadImageAndSaveBook() {
         String title = editTitle.getText().toString().trim();
         if (title.isEmpty()) {
-            editTitle.setError("Názov je povinný");
+            editTitle.setError("Title is required");
             return;
         }
 
@@ -101,8 +101,8 @@ public class AddBook extends AppCompatActivity {
                     saveBookToFirestore(title, uri.toString());
                 }))
                 .addOnFailureListener(e -> {
-                    Log.e("StorageError", "Chyba: ", e);
-                    Toast.makeText(this, "Chyba nahrávania obrázka", Toast.LENGTH_SHORT).show();
+                    Log.e("StorageError", "Error: ", e);
+                    Toast.makeText(this, "Error uploading image.", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -135,8 +135,8 @@ public class AddBook extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Chyba pri zápise: ", e);
-                    Toast.makeText(this, "Chyba Firestore: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("FirestoreError", "Error while writing: ", e);
+                    Toast.makeText(this, "Firestore Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -154,6 +154,6 @@ public class AddBook extends AppCompatActivity {
 
         FirebaseFirestore.getInstance().collection("users").document(uid)
                 .update(updates)
-                .addOnFailureListener(e -> Log.e("CountUpdate", "Chyba aktualizácie počtov", e));
+                .addOnFailureListener(e -> Log.e("CountUpdate", "Error while updating count.", e));
     }
 }

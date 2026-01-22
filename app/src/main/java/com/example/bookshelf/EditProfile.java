@@ -34,16 +34,16 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        // Initialize Firebase
+        // Inicializácia Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize Views
+        // Inicializácia Views
         nameEdit = findViewById(R.id.editRealName);
         usernameEdit = findViewById(R.id.editUsername);
         saveBtn = findViewById(R.id.btn_save_profile);
 
-        // Setup Toolbar
+        // Nastavenie Toolbaru
         setupToolbar();
 
         // 1. Unpack and Pre-fill data
@@ -89,7 +89,7 @@ public class EditProfile extends AppCompatActivity {
         String newUsername = usernameEdit.getText().toString().trim();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        // Validation
+        // Validácia
         if (newName.isEmpty() || newUsername.isEmpty()) {
             Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
             return;
@@ -120,7 +120,7 @@ public class EditProfile extends AppCompatActivity {
             } else {
                 Log.e(TAG, "Auth Update Failed", task.getException());
                 resetButton();
-                Toast.makeText(this, "Failed to update Auth name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to update profile name", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -135,7 +135,7 @@ public class EditProfile extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Firestore updated successfully.");
                     Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
-                    finish(); // Go back to Profile screen
+                    finish(); // Návrat na Profile screen
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Firestore Update Failed", e);
@@ -146,6 +146,6 @@ public class EditProfile extends AppCompatActivity {
 
     private void resetButton() {
         saveBtn.setEnabled(true);
-        saveBtn.setText("Save Changes");
+        saveBtn.setText("Save changes");
     }
 }

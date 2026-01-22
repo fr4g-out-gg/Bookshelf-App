@@ -64,19 +64,19 @@ public class Bookshelf extends AppCompatActivity {
 
     private void showAddShelfDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Nová kategória");
+        builder.setTitle("New category");
 
         final EditText input = new EditText(this);
-        input.setHint("Názov poličky...");
+        input.setHint("Shelf name...");
         builder.setView(input);
 
-        builder.setPositiveButton("Pridať", (dialog, which) -> {
+        builder.setPositiveButton("Add", (dialog, which) -> {
             String shelfName = input.getText().toString().trim();
             if (!shelfName.isEmpty()) {
                 saveShelfToFirestore(shelfName);
             }
         });
-        builder.setNegativeButton("Zrušiť", null);
+        builder.setNegativeButton("Cancel", null);
         builder.show();
     }
 
@@ -96,10 +96,10 @@ public class Bookshelf extends AppCompatActivity {
                     // Po úspešnom uložení pridáme do zoznamu a refreshneme UI
                     shelfList.add(name);
                     adapter.notifyItemInserted(shelfList.size() - 1);
-                    Toast.makeText(this, "Polička " + name + " pridaná", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Shelf " + name + " added", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Chyba ukladania: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Save error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -120,7 +120,7 @@ public class Bookshelf extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba pri načítaní", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error loading data", Toast.LENGTH_SHORT).show());
     }
 
     @Override

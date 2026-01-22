@@ -76,7 +76,7 @@ public class ChosenBook extends AppCompatActivity {
         android.util.Log.d("FIREBASE_CHECK", "Hľadám v poličke: " + shelfName);
         android.util.Log.d("FIREBASE_CHECK", "Hľadám dokument s ID: " + bookId);
         if (mAuth.getCurrentUser() == null || shelfName == null || bookId == null) {
-            Toast.makeText(this, "Chýbajúce údaje o knihe", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Missing book data", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -112,10 +112,10 @@ public class ChosenBook extends AppCompatActivity {
                         }
                     } else {
                         android.util.Log.e("FIREBASE_CHECK", "Dokument neexistuje! Skontroluj cestu.");
-                        Toast.makeText(this, "Kniha sa nenašla", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Book not found", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void updateBook() {
@@ -143,20 +143,20 @@ public class ChosenBook extends AppCompatActivity {
                     else if (wasReadInitially && !isReadNow) readDelta = -1; // Zmenená na neprečítanú
 
                     if (readDelta != 0) {updateUserCounts(0, readDelta);}
-                    Toast.makeText(this, "Kniha bola úspešne upravená", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Book updated successfully", Toast.LENGTH_SHORT).show();
                     finish(); // Návrat do poličky
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba pri ukladaní: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Save error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void showDeleteBookDialog() {
         String currentTitle = editTitle.getText().toString();
 
         new AlertDialog.Builder(this)
-                .setTitle("Zmazať knihu")
-                .setMessage("Naozaj chcete zmazať knihu '" + currentTitle + "'?")
-                .setPositiveButton("Zmazať", (dialog, which) -> deleteBook())
-                .setNegativeButton("Zrušiť", null)
+                .setTitle("Delete book")
+                .setMessage("Are you sure you want to delete '" + currentTitle + "'?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteBook())
+                .setNegativeButton("Cancel", null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
@@ -173,10 +173,10 @@ public class ChosenBook extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     int readDecrement = checkRead.isChecked() ? -1 : 0;
                     updateUserCounts(-1, readDecrement);
-                    Toast.makeText(this, "Kniha bola odstránená", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Book has been removed", Toast.LENGTH_SHORT).show();
                     finish(); // Návrat do poličky
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Chyba pri mazaní: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Delete error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void updateUserCounts(int libraryDelta, int readDelta) {

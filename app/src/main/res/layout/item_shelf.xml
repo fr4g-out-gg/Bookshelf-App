@@ -14,7 +14,7 @@
         android:background="@drawable/transparent"
         android:fontFamily="cursive"
         android:gravity="center"
-        android:text="Názov knihy"
+        android:text="Book tittle"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textFontWeight="700"

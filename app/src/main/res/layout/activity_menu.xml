@@ -61,7 +61,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="10dp"
                     android:letterSpacing="0.1"
-                    android:text="Tip pre vás"
+                    android:text="Recommendation"
                     android:textAllCaps="true"
                     android:textColor="@color/white_grey"
                     android:textSize="12sp" />
@@ -91,7 +91,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:text="Názov knihy"
+                        android:text="Book Tittle"
                         android:textColor="@color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -101,7 +101,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Autor"
+                        android:text="Author"
                         android:textColor="#B3FFFFFF"
                         android:textSize="14sp" />
 
@@ -112,7 +112,7 @@
                         android:layout_marginTop="8dp"
                         android:ellipsize="end"
                         android:gravity="top"
-                        android:text="Popis knihy sa teraz prispôsobí zvyšnej výške karty..."
+                        android:text="Description"
                         android:textColor="#80FFFFFF"
                         android:textSize="12sp" />
                 </LinearLayout>

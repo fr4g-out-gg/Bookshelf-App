@@ -15,7 +15,7 @@
         app:navigationIcon="@drawable/chevron_back"
         app:navigationIconTint="@color/white"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Pridať Knihu">
+        app:title="Add Book">
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -49,7 +49,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nová kniha"
+                android:text="New Book"
                 android:textColor="@color/white"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -57,22 +57,22 @@
 
             <EditText android:id="@+id/edit_book_title"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Názov knihy" android:inputType="textCapSentences"
+                android:hint="Book title" android:inputType="textCapSentences"
                 android:textColor="@color/white" android:textColorHint="@color/hint_grey" />
 
             <EditText android:id="@+id/edit_book_author"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Autor" android:layout_marginTop="8dp"
+                android:hint="Author" android:layout_marginTop="8dp"
                 android:textColor="@color/white" android:textColorHint="@color/hint_grey"/>
 
             <EditText android:id="@+id/edit_book_genre"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Žáner" android:layout_marginTop="8dp"
+                android:hint="Genre" android:layout_marginTop="8dp"
                 android:textColor="@color/white" android:textColorHint="@color/hint_grey"/>
 
             <EditText android:id="@+id/edit_book_description"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Popis knihy" android:gravity="top"
+                android:hint="Book description" android:gravity="top"
                 android:layout_marginTop="8dp" android:lines="3"
                 android:textColor="@color/white" android:textColorHint="@color/hint_grey"/>
             <ImageView
@@ -91,19 +91,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:backgroundTint="@color/white"
-                android:text="Vybrať obálku"
+                android:text="Select cover"
                 android:layout_gravity="center"
                 android:textColor="@color/black" />
 
             <CheckBox android:id="@+id/check_is_read"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Prečítaná" android:layout_marginTop="12dp"
+                android:text="Read" android:layout_marginTop="12dp"
                 android:textColor="@color/white"
                 android:buttonTint="@color/white"/>
 
             <Button android:id="@+id/btn_save_book"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="Uložiť do poličky" android:layout_marginTop="20dp"
+                android:text="Save to shelf" android:layout_marginTop="20dp"
                 android:backgroundTint="@color/white" android:textColor="@color/black"/>
 
         </LinearLayout>

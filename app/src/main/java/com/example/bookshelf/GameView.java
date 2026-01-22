@@ -36,7 +36,7 @@ public class GameView extends View {
         Paint textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
         textPaint.setTextSize(60);
-        canvas.drawText("Skóre: " + score, 50, 100, textPaint);
+        canvas.drawText("Score: " + score, 50, 100, textPaint);
 
         // Vykreslenie loptičky
         canvas.drawCircle(x, y, radius, ballPaint);

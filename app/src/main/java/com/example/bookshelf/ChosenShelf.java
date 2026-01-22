@@ -67,10 +67,10 @@ public class ChosenShelf extends AppCompatActivity {
 
     private void showDeleteShelfDialog() {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Zmazať poličku")
-                .setMessage("Naozaj chcete zmazať celú poličku '" + shelfName + "'? Táto akcia je nevratná.")
-                .setPositiveButton("Zmazať", (dialog, which) -> deleteShelf())
-                .setNegativeButton("Zrušiť", null)
+                .setTitle("Delete shelf")
+                .setMessage("Are you sure you want to delete the entire shelf '" + shelfName + "'? This action cannot be undone.")
+                .setPositiveButton("Delete", (dialog, which) -> deleteShelf())
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 
@@ -82,11 +82,11 @@ public class ChosenShelf extends AppCompatActivity {
                 .collection("custom_shelves").document(shelfName)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(ChosenShelf.this, "Polička zmazaná", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChosenShelf.this, "Shelf deleted", Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(ChosenShelf.this, "Chyba pri mazaní: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChosenShelf.this, "Error deleting: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -142,7 +142,7 @@ public class ChosenShelf extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firebase", "Chyba pri načítaní kníh z cesty: " + shelfName, e);
-                    Toast.makeText(this, "Chyba: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
