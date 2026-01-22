@@ -15,6 +15,10 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -131,7 +135,11 @@ public class MainActivity extends AppCompatActivity {
             AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
             mAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
-                    goToDashboard();
+                    // Získame aktuálneho používateľa z Firebase Auth
+                    com.google.firebase.auth.FirebaseUser user = mAuth.getCurrentUser();
+                    if (user != null) {
+                        checkAndCreateUserInFirestore(user);
+                    }
                 } else {
                     Toast.makeText(MainActivity.this, "Google Auth Failed.", Toast.LENGTH_SHORT).show();
                 }
@@ -139,5 +147,41 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Error handling credential", e);
         }
+    }
+
+    private void checkAndCreateUserInFirestore(com.google.firebase.auth.FirebaseUser user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+
+        // Skontrolujeme, či už používateľ v databáze existuje, aby sme mu nepremazali štatistiky
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().exists()) {
+                // Používateľ ešte nemá profil, vytvoríme ho
+                Map<String, Object> userMap = new HashMap<>();
+
+                // Vygenerujeme username z mena v Google účte alebo z emailu
+                String rawName = user.getDisplayName();
+                String username = (rawName != null) ? rawName.replace(" ", "_").toLowerCase() : "user_" + userId.substring(0, 5);
+
+                userMap.put("username", username);
+                userMap.put("libraryCount", 0);
+                userMap.put("readCount", 0);
+                userMap.put("email", user.getEmail());
+                userMap.put("uid", userId);
+
+                db.collection("users").document(userId).set(userMap)
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(TAG, "User profile created for Google login");
+                            goToDashboard();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e(TAG, "Error creating user profile", e);
+                            goToDashboard(); // Ideme do dashboardu aj pri chybe, aby sme userovi nezablokovali appku
+                        });
+            } else {
+                // Používateľ už existuje, len pokračujeme
+                goToDashboard();
+            }
+        });
     }
 }
