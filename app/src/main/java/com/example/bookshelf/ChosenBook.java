@@ -1,6 +1,7 @@
 package com.example.bookshelf;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,6 +29,9 @@ public class ChosenBook extends AppCompatActivity {
     private String bookId, shelfName;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
+    private boolean wasReadInitially;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,7 @@ public class ChosenBook extends AppCompatActivity {
             return;
         }
 
+
         String uid = mAuth.getCurrentUser().getUid();
 
         db.collection("users").document(uid)
@@ -92,6 +97,7 @@ public class ChosenBook extends AppCompatActivity {
 
                         Boolean isRead = doc.getBoolean("read");
                         checkRead.setChecked(isRead != null && isRead);
+                        wasReadInitially = isRead != null && isRead;
 
                         String url = doc.getString("imageUrl");
 
@@ -130,6 +136,13 @@ public class ChosenBook extends AppCompatActivity {
                 .collection("books").document(bookId)
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
+                    boolean isReadNow = checkRead.isChecked();
+                    int readDelta = 0;
+
+                    if (!wasReadInitially && isReadNow) readDelta = 1;      // Zmenená na prečítanú
+                    else if (wasReadInitially && !isReadNow) readDelta = -1; // Zmenená na neprečítanú
+
+                    if (readDelta != 0) {updateUserCounts(0, readDelta);}
                     Toast.makeText(this, "Kniha bola úspešne upravená", Toast.LENGTH_SHORT).show();
                     finish(); // Návrat do poličky
                 })
@@ -158,9 +171,28 @@ public class ChosenBook extends AppCompatActivity {
                 .collection("books").document(bookId)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
+                    int readDecrement = checkRead.isChecked() ? -1 : 0;
+                    updateUserCounts(-1, readDecrement);
                     Toast.makeText(this, "Kniha bola odstránená", Toast.LENGTH_SHORT).show();
                     finish(); // Návrat do poličky
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Chyba pri mazaní: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void updateUserCounts(int libraryDelta, int readDelta) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        Map<String, Object> updates = new HashMap<>();
+        if (libraryDelta != 0) {
+            updates.put("libraryCount", com.google.firebase.firestore.FieldValue.increment(libraryDelta));
+        }
+        if (readDelta != 0) {
+            updates.put("readCount", com.google.firebase.firestore.FieldValue.increment(readDelta));
+        }
+
+        FirebaseFirestore.getInstance().collection("users").document(uid)
+                .update(updates)
+                .addOnFailureListener(e -> Log.e("CountUpdate", "Chyba aktualizácie počtov", e));
     }
 }

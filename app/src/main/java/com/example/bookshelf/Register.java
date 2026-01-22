@@ -115,7 +115,6 @@ public class Register extends AppCompatActivity {
         userMap.put("username", username);
         userMap.put("libraryCount", 0);
         userMap.put("readCount", 0);
-        userMap.put("shelvesCount", 0);
 
         db.collection("users").document(userId)
                 .set(userMap)

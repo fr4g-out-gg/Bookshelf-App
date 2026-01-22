@@ -27,6 +27,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Random;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 
 public class Menu extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -39,6 +49,8 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
+    private GoogleBooksService googleBooksService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +59,9 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        setupRetrofit();
+        fetchBookRecommendation();
 
         // 1. Setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -193,4 +208,72 @@ public class Menu extends AppCompatActivity implements NavigationView.OnNavigati
             super.onBackPressed();
         }
     }
+
+    private void setupRetrofit() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://www.googleapis.com/books/v1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        googleBooksService = retrofit.create(GoogleBooksService.class);
+    }
+
+    private void fetchBookRecommendation() {
+        googleBooksService.getRandomBook("subject:fiction", 10).enqueue(new Callback<BookResponse>() {
+            @Override
+            public void onResponse(Call<BookResponse> call, Response<BookResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getItems() != null) {
+                    List<BookItem> items = response.body().getItems();
+                    if (!items.isEmpty()) {
+                        BookItem randomBook = items.get(new Random().nextInt(items.size()));
+                        updateRecommendationUI(randomBook);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BookResponse> call, Throwable t) {
+                Log.e("API_ERROR", "Chyba pri načítaní z API: " + t.getMessage());
+            }
+        });
+    }
+
+    private void updateRecommendationUI(BookItem book) {
+        VolumeInfo info = book.getVolumeInfo();
+
+        TextView tvTitle = findViewById(R.id.tvRecommendedTitle);
+        TextView tvAuthor = findViewById(R.id.tvRecommendedAuthor);
+        TextView tvDesc = findViewById(R.id.tvRecommendedDescription);
+        ImageView imgCover = findViewById(R.id.imgRecommendedBook);
+
+        // Nastavenie textov
+        if (tvTitle != null) tvTitle.setText(info.getTitle());
+
+        if (tvAuthor != null) {
+            String authors = (info.getAuthors() != null && !info.getAuthors().isEmpty())
+                    ? info.getAuthors().get(0)
+                    : "Unknown Author";
+            tvAuthor.setText(authors);
+        }
+
+        if (tvDesc != null) {
+            String description = info.getDescription() != null
+                    ? info.getDescription()
+                    : "No description available for this book.";
+            tvDesc.setText(description);
+        }
+
+        // Načítanie obrázka cez Glide
+        if (imgCover != null && info.getImageLinks() != null) {
+            String url = info.getImageLinks().getThumbnail();
+            Glide.with(this)
+                    .load(url)
+                    .placeholder(R.drawable.no_cover_available)
+                    .into(imgCover);
+        }
+    }
+
+
 }
+
+

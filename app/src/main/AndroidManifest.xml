@@ -12,9 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bookshelf">
         <activity
-            android:name=".ChosenBook"
-            android:exported="false" />
-        <activity
             android:name=".Bookshelf"
             android:exported="false"
             android:parentActivityName=".Menu" />
@@ -27,7 +24,7 @@
             android:exported="false"
             android:parentActivityName=".Profile" />
         <activity
-            android:name=".ChoosenBook"
+            android:name=".ChosenBook"
             android:exported="false"
             android:parentActivityName=".ChosenShelf" />
         <activity
@@ -38,10 +35,6 @@
             android:name=".ChosenShelf"
             android:exported="false"
             android:parentActivityName=".Menu" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_settings" />
         <activity
             android:name=".Profile"
             android:exported="false"

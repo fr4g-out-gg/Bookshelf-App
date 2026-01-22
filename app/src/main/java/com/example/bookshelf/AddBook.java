@@ -21,6 +21,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class AddBook extends AppCompatActivity {
@@ -127,6 +129,8 @@ public class AddBook extends AppCompatActivity {
                 .collection("books")
                 .add(book) // Používame .add() pre náhodné ID
                 .addOnSuccessListener(doc -> {
+                    int readIncrement = checkRead.isChecked() ? 1 : 0;
+                    updateUserCounts(1, readIncrement);
                     Toast.makeText(this, "Kniha uložená!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
@@ -134,5 +138,22 @@ public class AddBook extends AppCompatActivity {
                     Log.e("FirestoreError", "Chyba pri zápise: ", e);
                     Toast.makeText(this, "Chyba Firestore: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void updateUserCounts(int libraryDelta, int readDelta) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) return;
+
+        Map<String, Object> updates = new HashMap<>();
+        if (libraryDelta != 0) {
+            updates.put("libraryCount", com.google.firebase.firestore.FieldValue.increment(libraryDelta));
+        }
+        if (readDelta != 0) {
+            updates.put("readCount", com.google.firebase.firestore.FieldValue.increment(readDelta));
+        }
+
+        FirebaseFirestore.getInstance().collection("users").document(uid)
+                .update(updates)
+                .addOnFailureListener(e -> Log.e("CountUpdate", "Chyba aktualizácie počtov", e));
     }
 }
