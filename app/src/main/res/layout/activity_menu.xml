@@ -60,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="10dp"
-                    android:letterSpacing="0.1"
+                    android:letterSpacing="0.05"
                     android:text="Recommendation"
                     android:textAllCaps="true"
                     android:textColor="@color/white_grey"
