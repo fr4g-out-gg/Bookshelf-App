@@ -13,9 +13,10 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@drawable/blurred_brown_gradient"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/chevron_back"
         app:navigationIconTint="@color/white"
-        app:layout_constraintTop_toTopOf="parent"
         app:title="Kniha">
 
 
@@ -23,21 +24,22 @@
 
     <ImageButton
         android:id="@+id/btnDeleteBook"
+
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignBottom="@+id/toolbar"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop='true'
         android:layout_alignParentEnd="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Delete"
         android:src="@android:drawable/ic_menu_delete"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar_line"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <View
         android:id="@+id/toolbar_line"
